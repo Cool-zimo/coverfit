@@ -326,7 +326,7 @@
     const box = $('formats');
     box.innerHTML = ENC.FORMATS.map(f =>
       `<button class="chip${f.id === S.format ? ' on' : ''}" data-f="${f.id}" ` +
-      `title="${f.note}">${f.label}</button>`).join('');
+      `title="${f.note}">${ENC.labelOf(f)}</button>`).join('');
     box.querySelectorAll('[data-f]').forEach(el => {
       el.onclick = () => {
         if (el.disabled) return;
@@ -347,7 +347,7 @@
       const f = ENC.findFormat(el.dataset.f);
       const ok = S.supported[f.mime];
       el.disabled = !ok;
-      el.title = ok ? f.note : '这个浏览器不支持导出 ' + f.label;
+      el.title = ok ? f.note : '这个浏览器不支持导出 ' + ENC.labelOf(f);
     });
     // 若当前默认格式不可用，退回 PNG
     if (!S.supported[fmtOf().mime]) { S.format = 'png'; }
@@ -436,7 +436,7 @@
     }
 
     const blob = await new Promise(res => cv.toBlob(res, f.mime, f.lossy ? q : undefined));
-    if (!blob) throw new Error(f.label + ' 编码失败');
+    if (!blob) throw new Error(ENC.labelOf(f) + ' 编码失败');
     return blob;
   }
 
@@ -456,7 +456,7 @@
       ${fileRow}
       <dt>裁切区</dt><dd>${src.w} × ${src.h}</dd>
       <dt>输出</dt><dd>${out.w} × ${out.h}</dd>
-      <dt>格式</dt><dd>${fmtOf().label}</dd>
+      <dt>格式</dt><dd>${ENC.labelOf(fmtOf())}</dd>
       <dt>预估体积</dt><dd id="estSize">…</dd>`;
 
     clearTimeout(metaTimer);
@@ -642,6 +642,7 @@
   /* ================= 启动 ================= */
 
   async function init() {
+    ENC.auditFormats();          // 格式表缺字段时立刻报，别等用户在界面上看见 undefined
     buildRatios();
     buildFormats();
     buildSizes();

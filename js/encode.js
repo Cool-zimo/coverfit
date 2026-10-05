@@ -13,14 +13,40 @@
   const FORMATS = [
     { id: 'png',  mime: 'image/png',            ext: 'png',  label: 'PNG',  lossy: false, note: '无损 · 支持透明' },
     { id: 'jpeg', mime: 'image/jpeg',           ext: 'jpg',  label: 'JPEG', lossy: true,  note: '体积小 · 不支持透明' },
-    { id: 'webp', mime: 'image/webp',           ext: 'webp', lossy: true,  note: '现代格式 · 支持透明' },
-    { id: 'gif',  mime: 'image/gif',            ext: 'gif',  lossy: true,  note: '静态 · 动图会丢帧' },
-    { id: 'bmp',  mime: 'image/bmp',            ext: 'bmp',  lossy: false, note: '无压缩 · 自研编码' },
-    { id: 'ico',  mime: 'image/x-icon',         ext: 'ico',  lossy: false, note: '图标 · 自研编码' },
-    { id: 'avif', mime: 'image/avif',           ext: 'avif', lossy: true,  note: '新一代 · 压缩率高' },
+    { id: 'webp', mime: 'image/webp',           ext: 'webp', label: 'WebP', lossy: true,  note: '现代格式 · 支持透明' },
+    { id: 'gif',  mime: 'image/gif',            ext: 'gif',  label: 'GIF',  lossy: true,  note: '静态 · 动图会丢帧' },
+    { id: 'bmp',  mime: 'image/bmp',            ext: 'bmp',  label: 'BMP',  lossy: false, note: '无压缩 · 自研编码' },
+    { id: 'ico',  mime: 'image/x-icon',         ext: 'ico',  label: 'ICO',  lossy: false, note: '图标 · 自研编码' },
+    { id: 'avif', mime: 'image/avif',           ext: 'avif', label: 'AVIF', lossy: true,  note: '新一代 · 压缩率高' },
   ];
 
   function findFormat(id) { return FORMATS.find(f => f.id === id) || null; }
+
+  /**
+   * 格式表里每一项都必须有 id / label / ext / mime。
+   * 曾经在手写这个数组时漏掉了几行的 label，界面上直接渲染成 "undefined" ——
+   * 而这种错不会抛异常、不会进控制台，只能靠眼睛看见。
+   * 所以启动时自检一遍，缺字段立刻报出来；同时给 label 兜底，
+   * 真漏了也显示成 id 大写，而不是 undefined。
+   */
+  function auditFormats() {
+    const bad = [];
+    for (const f of FORMATS) {
+      for (const k of ['id', 'label', 'ext', 'mime']) {
+        if (!f[k]) bad.push(`${f.id || '?'} 缺 ${k}`);
+      }
+    }
+    if (bad.length && typeof console !== 'undefined') {
+      console.error('[CoverFit] FORMATS 字段缺失：', bad.join('; '));
+    }
+    return bad;
+  }
+
+  /** 显示名：缺 label 时退回 id 大写，绝不显示 undefined */
+  function labelOf(f) {
+    if (!f) return '未知';
+    return f.label || String(f.id || '').toUpperCase() || '未知';
+  }
 
   /**
    * 探测画布能不能直接编出某种格式。
@@ -157,6 +183,6 @@
     return (v >= 100 || i === 0 ? Math.round(v) : v.toFixed(1)) + ' ' + u[i];
   }
 
-  root.Enc = { FORMATS, findFormat, probe, bmpFromImageData, icoFromPng,
-               baseName, outName, humanSize };
+  root.Enc = { FORMATS, findFormat, labelOf, auditFormats, probe,
+               bmpFromImageData, icoFromPng, baseName, outName, humanSize };
 })(typeof window !== 'undefined' ? window : globalThis);
