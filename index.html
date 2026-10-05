@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>CoverFit · 图片格式转换与比例裁切</title>
+<meta name="description" content="纯本地的图片格式转换与比例裁切工具：拖入图片，裁成任意比例，导出 PNG / JPEG / WebP / GIF / BMP / ICO / AVIF。不上传服务器。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>◧</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="logo">◧</span>
+    <div class="brand-txt">
+      <h1>CoverFit</h1>
+      <p>图片格式转换 · 比例裁切</p>
+    </div>
+  </div>
+  <div class="top-note" id="privacy">全程在本地完成，图片不上传</div>
+  <div class="top-actions" id="topActions" hidden>
+    <button class="btn ghost" id="btnReset">重置裁切框</button>
+    <button class="btn ghost" id="btnChange">换一张</button>
+  </div>
+</header>
+
+<!-- ============ 空态：拖放 ============ -->
+<section class="drop" id="drop">
+  <div class="drop-inner">
+    <div class="drop-icon">⬇</div>
+    <h2>把图片拖到这里</h2>
+    <p class="drop-sub">
+      或者 <button class="link" id="btnPick">选择文件</button>
+      <span class="dim">· 也可以直接 Ctrl+V 粘贴</span>
+    </p>
+    <ul class="drop-tips">
+      <li>转成 PNG / JPEG / WebP / GIF / BMP / ICO / AVIF</li>
+      <li>裁成 1:1、16:9、3:4、公众号 2.35:1 等常用比例</li>
+      <li>可以一次拖入多张，逐个处理</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 编辑态 ============ -->
+<main class="work" id="work" hidden>
+
+  <div class="stage-col">
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage" id="stage">
+        <canvas class="stage-img" id="stageCanvas"></canvas>
+        <div class="crop" id="crop">
+          <div class="crop-grid"></div>
+          <span class="handle" data-h="nw"></span>
+          <span class="handle" data-h="n"></span>
+          <span class="handle" data-h="ne"></span>
+          <span class="handle" data-h="e"></span>
+          <span class="handle" data-h="se"></span>
+          <span class="handle" data-h="s"></span>
+          <span class="handle" data-h="sw"></span>
+          <span class="handle" data-h="w"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 多文件队列 -->
+    <div class="queue" id="queue" hidden>
+      <div class="queue-head">
+        <span id="queueCount">0 张</span>
+        <button class="btn ghost sm" id="btnDownloadAll">下载全部</button>
+      </div>
+      <div class="queue-items" id="queueItems"></div>
+    </div>
+  </div>
+
+  <aside class="panel">
+
+    <div class="card">
+      <h3>裁切比例</h3>
+      <div class="ratios" id="ratios"></div>
+      <div class="row custom-ratio" id="customRow" hidden>
+        <input type="number" id="rw" min="1" step="1" value="16">
+        <span class="dim">:</span>
+        <input type="number" id="rh" min="1" step="1" value="9">
+        <button class="btn ghost sm" id="btnApplyCustom">应用</button>
+      </div>
+      <p class="hint" id="ratioHint"></p>
+    </div>
+
+    <div class="card">
+      <h3>输出格式</h3>
+      <div class="formats" id="formats"></div>
+      <div class="row quality" id="qualityRow" hidden>
+        <label for="quality">质量 <b id="qualityVal">92</b></label>
+        <input type="range" id="quality" min="10" max="100" value="92">
+      </div>
+      <p class="hint" id="formatHint"></p>
+    </div>
+
+    <div class="card">
+      <h3>输出尺寸</h3>
+      <div class="sizes" id="sizes"></div>
+      <div class="row" id="widthRow" hidden>
+        <input type="number" id="outWidth" min="16" step="1" placeholder="宽度 px">
+        <span class="dim">高度自动</span>
+      </div>
+      <p class="hint" id="sizeHint"></p>
+    </div>
+
+    <div class="card out-card">
+      <h3>结果</h3>
+      <dl class="meta" id="meta"></dl>
+      <button class="btn primary big" id="btnDownload">下载图片</button>
+      <p class="hint center" id="outHint"></p>
+    </div>
+
+  </aside>
+</main>
+
+<input type="file" id="fileInput" accept="image/*" multiple hidden>
+<div class="toast" id="toast" hidden></div>
+
+<script src="js/geom.js"></script>
+<script src="js/encode.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

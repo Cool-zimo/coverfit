@@ -1,0 +1,263 @@
+/* CoverFit —— 深色工作台风格。
+   深色不是审美偏好：裁切时要判断明暗细节，浅底会干扰。
+   而且遮罩暗化在深色上看得更清楚。 */
+
+:root{
+  --bg:#0e1014;
+  --bg2:#14171d;
+  --panel:#171b23;
+  --panel2:#1d222c;
+  --border:#272d38;
+  --border2:#333b48;
+  --text:#e7eaf0;
+  --dim:#8b93a5;
+  --dim2:#626b7d;
+  --accent:#7c5cff;
+  --accent2:#9b83ff;
+  --good:#37d399;
+  --warn:#fbbf24;
+  --radius:12px;
+}
+
+*{box-sizing:border-box}
+
+/* 必须加这一条。
+   .drop / .work / .row 都写了 display:flex|grid，作者样式的优先级高于
+   UA 样式表的 [hidden]{display:none} —— 于是 el.hidden = true 形同虚设：
+   拖入图片后拖放区不消失，编辑器被顶到页面下方九百多像素处；
+   质量滑块、自定义比例这些本该隐藏的行也全都露着。 */
+[hidden]{display:none !important}
+
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button,input{font-family:inherit}
+
+/* ---------- 顶栏 ---------- */
+.top{
+  display:flex;align-items:center;gap:18px;
+  padding:14px 22px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,var(--bg2),var(--bg));
+  position:sticky;top:0;z-index:50;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  font-size:26px;line-height:1;
+  color:var(--accent);
+  filter:drop-shadow(0 0 12px rgba(124,92,255,.5));
+}
+.brand-txt h1{margin:0;font-size:17px;font-weight:650;letter-spacing:.2px}
+.brand-txt p{margin:0;font-size:12px;color:var(--dim)}
+.top-note{
+  margin-left:auto;font-size:12px;color:var(--dim2);
+  border:1px solid var(--border);border-radius:999px;padding:4px 12px;
+}
+.top-actions{display:flex;gap:8px;margin-left:auto}
+.top .top-note + .top-actions{margin-left:0}
+
+/* ---------- 按钮 ---------- */
+.btn{
+  border:1px solid var(--border2);background:var(--panel2);color:var(--text);
+  padding:7px 14px;border-radius:9px;font-size:13px;cursor:pointer;
+  transition:.15s;white-space:nowrap;
+}
+.btn:hover{border-color:var(--accent);background:#232838}
+.btn:active{transform:translateY(1px)}
+.btn.primary{
+  background:linear-gradient(135deg,var(--accent),#6a45ff);
+  border-color:transparent;color:#fff;font-weight:600;
+}
+.btn.primary:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent}
+.btn.big{width:100%;padding:12px;font-size:14.5px;margin-top:12px}
+.btn.sm{padding:4px 10px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{
+  background:none;border:none;color:var(--accent2);cursor:pointer;
+  font-size:inherit;padding:0;text-decoration:underline;text-underline-offset:3px;
+}
+.dim{color:var(--dim)}
+
+/* ---------- 拖放区 ---------- */
+.drop{
+  min-height:calc(100vh - 64px);
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+.drop-inner{
+  width:100%;max-width:560px;text-align:center;
+  border:2px dashed var(--border2);border-radius:20px;
+  padding:56px 32px;transition:.18s;
+  background:radial-gradient(120% 100% at 50% 0%,rgba(124,92,255,.06),transparent 70%);
+}
+.drop.over .drop-inner{
+  border-color:var(--accent);
+  background:radial-gradient(120% 100% at 50% 0%,rgba(124,92,255,.16),transparent 70%);
+  transform:scale(1.01);
+}
+.drop-icon{font-size:44px;color:var(--accent);opacity:.85}
+.drop-inner h2{margin:14px 0 6px;font-size:21px;font-weight:600}
+.drop-sub{margin:0 0 22px;color:var(--dim);font-size:13.5px}
+.drop-tips{
+  list-style:none;margin:0;padding:16px 0 0;
+  border-top:1px solid var(--border);
+  color:var(--dim2);font-size:12.5px;text-align:left;
+  display:inline-block;
+}
+.drop-tips li{padding:3px 0 3px 18px;position:relative}
+.drop-tips li::before{content:"✓";position:absolute;left:0;color:var(--accent)}
+
+/* ---------- 工作区 ---------- */
+.work{
+  display:grid;grid-template-columns:minmax(0,1fr) 330px;
+  gap:18px;padding:18px 22px 32px;align-items:start;
+}
+.stage-col{min-width:0}
+.stage-wrap{
+  background:
+    linear-gradient(45deg,#1a1e26 25%,transparent 25%) 0 0/18px 18px,
+    linear-gradient(-45deg,#1a1e26 25%,transparent 25%) 0 9px/18px 18px,
+    linear-gradient(45deg,transparent 75%,#1a1e26 75%) 9px -9px/18px 18px,
+    linear-gradient(-45deg,transparent 75%,#1a1e26 75%) -9px 0/18px 18px,
+    var(--bg2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;display:flex;justify-content:center;align-items:center;
+  min-height:320px;
+}
+/* 棋盘格背景是必须的：透明 PNG 在纯色底上看不出哪里是透明的 */
+.stage{position:relative;line-height:0;touch-action:none}
+.stage-img{display:block;max-width:100%;user-select:none;-webkit-user-drag:none}
+
+/* ---------- 裁切框 ---------- */
+.crop{
+  position:absolute;cursor:move;
+  box-shadow:0 0 0 9999px rgba(6,8,12,.62);
+  outline:1px solid rgba(255,255,255,.92);
+}
+.crop-grid{position:absolute;inset:0;pointer-events:none}
+.crop-grid::before,.crop-grid::after{
+  content:"";position:absolute;inset:0;
+  border-color:rgba(255,255,255,.28);border-style:solid;
+}
+.crop-grid::before{border-width:0 1px;left:33.333%;right:33.333%}
+.crop-grid::after{border-width:1px 0;top:33.333%;bottom:33.333%}
+.handle{
+  position:absolute;width:14px;height:14px;
+  background:var(--accent);border:2px solid #fff;border-radius:3px;
+  box-shadow:0 1px 5px rgba(0,0,0,.5);
+}
+.handle[data-h="nw"]{left:-8px;top:-8px;cursor:nwse-resize}
+.handle[data-h="n"]{left:calc(50% - 7px);top:-8px;cursor:ns-resize}
+.handle[data-h="ne"]{right:-8px;top:-8px;cursor:nesw-resize}
+.handle[data-h="e"]{right:-8px;top:calc(50% - 7px);cursor:ew-resize}
+.handle[data-h="se"]{right:-8px;bottom:-8px;cursor:nwse-resize}
+.handle[data-h="s"]{left:calc(50% - 7px);bottom:-8px;cursor:ns-resize}
+.handle[data-h="sw"]{left:-8px;bottom:-8px;cursor:nesw-resize}
+.handle[data-h="w"]{left:-8px;top:calc(50% - 7px);cursor:ew-resize}
+
+/* ---------- 队列 ---------- */
+.queue{margin-top:14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);padding:12px}
+.queue-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:12.5px;color:var(--dim)}
+.queue-items{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.qitem{
+  flex:0 0 auto;width:60px;height:60px;border-radius:9px;overflow:hidden;
+  border:2px solid transparent;cursor:pointer;position:relative;background:#0c0e12;
+}
+.qitem.on{border-color:var(--accent)}
+.qitem img{width:100%;height:100%;object-fit:cover;display:block}
+.qitem span{
+  position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);
+  font-size:9.5px;text-align:center;padding:1px 2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* ---------- 面板 ---------- */
+.panel{display:flex;flex-direction:column;gap:14px;position:sticky;top:82px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.card h3{margin:0 0 11px;font-size:12px;font-weight:600;color:var(--dim);letter-spacing:.6px;text-transform:uppercase}
+
+.ratios{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  border:1px solid var(--border2);background:transparent;color:var(--text);
+  padding:6px 11px;border-radius:8px;font-size:12.5px;cursor:pointer;transition:.14s;
+}
+.chip:hover{border-color:var(--accent2)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip small{display:block;font-size:10px;opacity:.7;font-weight:400}
+
+.formats{display:flex;flex-wrap:wrap;gap:6px}
+.chip[disabled]{opacity:.35;cursor:not-allowed}
+.chip[disabled]:hover{border-color:var(--border2)}
+
+.sizes{display:flex;flex-wrap:wrap;gap:6px}
+
+.row{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px}
+.row input[type=number]{
+  width:70px;background:var(--bg);border:1px solid var(--border2);color:var(--text);
+  padding:5px 8px;border-radius:7px;
+}
+.row input[type=number]:focus,.row input[type=range]{outline:none;border-color:var(--accent)}
+.quality{flex-direction:column;align-items:stretch;gap:6px}
+.quality label{display:flex;justify-content:space-between;color:var(--dim)}
+.quality b{color:var(--text)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+.hint{margin:9px 0 0;font-size:11.5px;color:var(--dim2);line-height:1.55}
+.hint.center{text-align:center}
+
+.meta{margin:0;display:grid;grid-template-columns:auto 1fr;gap:5px 10px;font-size:12.5px}
+.meta dt{color:var(--dim2)}
+.meta dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.meta dd b{color:var(--good);font-weight:600}
+
+/* ---------- 拖入时的全屏提示 ----------
+   编辑器状态下拖放区是隐藏的，不给反馈的话用户不知道松手会不会生效 */
+body.dragging::after{
+  content:"松开即可载入图片";
+  position:fixed;inset:14px;z-index:150;
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;font-weight:600;color:#fff;
+  background:rgba(124,92,255,.16);
+  border:2px dashed var(--accent);border-radius:18px;
+  backdrop-filter:blur(2px);
+  pointer-events:none;
+}
+
+/* ---------- 提示 ---------- */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
+  background:var(--panel2);border:1px solid var(--border2);color:var(--text);
+  padding:10px 18px;border-radius:10px;font-size:13px;z-index:200;
+  box-shadow:0 8px 28px rgba(0,0,0,.5);
+  animation:pop .2s ease;
+}
+@keyframes pop{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:900px){
+  .work{grid-template-columns:1fr;padding:14px}
+  .panel{position:static}
+  .top-note{display:none}
+}
+@media (max-width:560px){
+  .top{padding:10px 14px;gap:10px}
+  .brand-txt p{display:none}
+  .drop-inner{padding:36px 18px}
+  .stage-wrap{padding:8px}
+  .handle{width:20px;height:20px}
+  .handle[data-h="nw"]{left:-10px;top:-10px}
+  .handle[data-h="ne"]{right:-10px;top:-10px}
+  .handle[data-h="se"]{right:-10px;bottom:-10px}
+  .handle[data-h="sw"]{left:-10px;bottom:-10px}
+  .handle[data-h="n"]{top:-10px}
+  .handle[data-h="s"]{bottom:-10px}
+  .handle[data-h="w"]{left:-10px}
+  .handle[data-h="e"]{right:-10px}
+}
